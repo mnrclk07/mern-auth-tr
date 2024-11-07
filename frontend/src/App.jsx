@@ -10,7 +10,8 @@ import Search from "./pages/Search";
 import EmailVerification from "./pages/EmailVerification";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Header from "./pages/Components/Header";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <div>
             <Header />
             <Home />
+            <Footer />
           </div>
         }
       />
@@ -30,6 +32,7 @@ export default function App() {
           <div>
             <Header />
             <About />
+            <Footer />
           </div>
         }
       />
@@ -39,6 +42,7 @@ export default function App() {
           <div>
             <Header />
             <Projects />
+            <Footer />
           </div>
         }
       />
@@ -48,6 +52,7 @@ export default function App() {
           <div>
             <Header />
             <Search />
+            <Footer />
           </div>
         }
       />
@@ -57,6 +62,7 @@ export default function App() {
           <div>
             <Header />
             <Dashboard />
+            <Footer />
           </div>
         }
       />
@@ -66,6 +72,7 @@ export default function App() {
           <div>
             <Header />
             <Register />
+            <Footer />
           </div>
         }
       />
@@ -76,6 +83,7 @@ export default function App() {
           <div>
             <Header />
             <Login />
+            <Footer />
           </div>
         }
       />
