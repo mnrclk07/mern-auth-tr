@@ -7,20 +7,26 @@ import {
   Spinner,
   TextInput,
 } from "flowbite-react";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { BiHide, BiShow } from "react-icons/bi";
 import { CiMail, CiLock } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
 
-function SignIn() {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -46,22 +52,22 @@ function SignIn() {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      return setErrorMessage("Lütfen tüm alanları doldurun.");
+      return dispatch(signInFailure("Lütfen tüm alanları doldurun."));
     }
 
     // E-posta formatını kontrol et
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      return setErrorMessage("Geçersiz email formatı.");
+      return dispatch(signInFailure("Geçersiz email formatı."));
     }
 
     if (formData.password.length < 6) {
-      return setErrorMessage("Şifre en az 6 karakter olmalıdır.");
+      return dispatch(signInFailure("Şifre en az 6 karakter olmalıdır."));
     }
 
     try {
-      setLoading(true);
-      setErrorMessage(null);
+      dispatch(signInStart());
+      dispatch(signInFailure(null));
 
       const res = await fetch("/backend/auth/login", {
         method: "POST",
@@ -72,7 +78,7 @@ function SignIn() {
       const data = await res.json();
 
       if (!res.ok || data.success === false) {
-        return setErrorMessage(data.message || "Giriş başarısız oldu.");
+        return dispatch(signInFailure(data.message || "Giriş başarısız oldu."));
       }
 
       if (rememberMe) {
@@ -83,6 +89,8 @@ function SignIn() {
         localStorage.removeItem("password");
       }
 
+      dispatch(signInSuccess(data));
+
       setFormData({
         email: "",
         password: "",
@@ -90,20 +98,18 @@ function SignIn() {
 
       navigate("/");
     } catch (error) {
-      setErrorMessage(error.message || "Bir hata oluştu.");
-    } finally {
-      setLoading(false);
+      dispatch(signInFailure(error.message || "Bir hata oluştu."));
     }
   };
 
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
-        setErrorMessage(null);
+        dispatch(signInFailure(null));
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [errorMessage, setErrorMessage]);
+  }, [errorMessage, dispatch]);
   return (
     <div className="min-h-screen mt-20 select-none">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -190,4 +196,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default Login;
